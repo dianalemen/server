@@ -55,17 +55,20 @@ app.get('/create', (req, res) => {
     )
 })
 
-app.post('/creatmsg', (req, res) => {
+app.post('/createmsg', (req, res) => {
+
     let body = req.body.body;
-    console.log(body);
-    let date = new Date();
+
     let message = new Message({
         body: body
     });
-    console.log('msg', message)
     res.send(
         Message.createMessage(message))
 })
+
+get.post('signup', (req, res) => {
+
+});
 
 app.get('/read', (req, res) => {
     //mongoConnected.then(db => {
