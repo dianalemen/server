@@ -8,6 +8,9 @@ const app = express();
 const MongoClient = require('mongodb').MongoClient;
 const mongoose = require('mongoose');
 const Message = require('./model/messege');
+const User = require('./model/user');
+const passport = require('passport');
+const expressValidator = require('express-validator');
 
 mongoose.connect('mongodb://localhost/chatdb');
 var db = mongoose.connection;
@@ -37,6 +40,7 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(requestMiddleware);
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded())
+app.use(expressValidator());
 
 app.get('/', (req, res) => {
     res.render('home', {
@@ -66,8 +70,32 @@ app.post('/createmsg', (req, res) => {
         Message.createMessage(message))
 })
 
-get.post('signup', (req, res) => {
+app.post('/registration', (req, res) => {
 
+    let username = req.body.username;
+    let password = req.body.password;
+    let email = req.body.email;
+    let name = req.body.name;
+
+    console.log(req.body);
+
+    req.checkBody('username', 'Name is required').notEmpty();
+    req.checkBody('password', 'Password is required').notEmpty();
+    req.checkBody('email', 'Email is required').notEmpty();
+    req.checkBody('email', 'Email is is not valid').isEmail();
+    req.checkBody('username', 'Name is required').notEmpty();
+
+    let errors = req.validationErrors();
+
+    var user = new User({
+        username: username,
+        password: password,
+        email: email,
+        name: name
+    });
+    console.log(user);
+    res.send(
+        User.createUser(user))
 });
 
 app.get('/read', (req, res) => {
