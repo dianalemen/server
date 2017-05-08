@@ -11,18 +11,11 @@ const Message = require('./model/messege');
 const User = require('./model/user');
 const passport = require('passport');
 const expressValidator = require('express-validator');
+const jwt = require('jsonwebtoken');
+const config = require('./config.json');
 
 mongoose.connect('mongodb://localhost/chatdb');
 var db = mongoose.connection;
-/*const mongoConnected = new Promise((res, rej) => {
-    MongoClient.connect('mongodb://localhost:27017/chatdb', (err, db) => {
-        if (err) rej(err)
-        console.log('Connected correctly to server')
-        res(db)
-    })
-})
-
-mongoConnected.catch(err => console.error(err.stack))*/
 
 const requestMiddleware = require('./request-middleware').requestMiddleware;
 
@@ -50,7 +43,6 @@ app.get('/', (req, res) => {
 
 app.get('/create', (req, res) => {
     res.send(
-        //mongoConnected.then(db => {
         db
         .collection('User')
         .insert({ "username": "5", "password": "fdsfsdfsdf", "email": "ex@com.ua", "name": "Diana" }, (err, user) => {
@@ -98,8 +90,36 @@ app.post('/registration', (req, res) => {
         User.createUser(user))
 });
 
+app.post('/login', (req, res) => {
+    db.collection('users')
+        .findOne({ username: req.body.username },
+            function(err, user) {
+
+                if (err) throw err;
+
+                if (!user) {
+                    res.json({ success: false, message: 'Authentication failed. User not found.' });
+                } else if (user) {
+
+                    if (user.password != req.body.password) {
+                        res.json({ success: false, message: 'Authentication failed. Wrong password.' });
+                    } else {
+
+                        var token = jwt.sign(user, config.secret, { noTimestamp: true });
+
+                        res.json({
+                            success: true,
+                            message: 'Enjoy your token!',
+                            token: token
+                        });
+                    }
+
+                }
+
+            });
+})
+
 app.get('/read', (req, res) => {
-    //mongoConnected.then(db => {
     db.collection('User')
         .find().toArray(function(e, docs) {
             res.render("user", {
@@ -109,7 +129,6 @@ app.get('/read', (req, res) => {
 });
 
 app.get('/readmsg', (req, res) => {
-    //mongoConnected.then(db => {
     db.collection('messages')
         .find().toArray(function(e, docs) {
             res.render("message", {
@@ -120,7 +139,6 @@ app.get('/readmsg', (req, res) => {
 
 app.get('/update', (req, res) => {
     res.send(
-        //mongoConnected.then(db => {
         db
         .collection('User')
         .updateOne({ "id": "4" }, { $set: { "item": "newItem" } }, (err, user) => {
@@ -131,7 +149,6 @@ app.get('/update', (req, res) => {
 
 app.get('/delete', (req, res) => {
     res.send(
-        //mongoConnected.then(db => {
         db
         .collection('User')
         .deleteMany({ "id": "5" }, (err, user) => {
@@ -145,8 +162,5 @@ app.get('*', (req, res) => {
 });
 
 app.listen(port, (err) => {
-    // if(err) {
-    //     return console.log('something goes wrong!!!');
-    // }
     console.log(`server is runnign at ${port}`);
 });
