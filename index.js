@@ -15,6 +15,7 @@ const jwt = require('jsonwebtoken');
 const config = require('./config.json');
 const http = require('http').Server(app);
 const io = require('socket.io').listen(http);
+const routes = express.Router();
 
 mongoose.connect('mongodb://localhost/chatdb');
 const db = mongoose.connection;
@@ -37,7 +38,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded())
 app.use(expressValidator());
 
-app.get('/', (req, res) => {
+routes.get('/', (req, res) => {
     io.on('connection', function(socket) {
         console.log("connected");
     });
@@ -46,17 +47,7 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/create', (req, res) => {
-    res.send(
-        db
-        .collection('User')
-        .insert({ "username": "5", "password": "fdsfsdfsdf", "email": "ex@com.ua", "name": "Diana" }, (err, user) => {
-            if (err) res.status(404).send(err)
-        })
-    )
-})
-
-app.post('/createmsg', (req, res) => {
+routes.post('/createmsg', (req, res) => {
 
     let body = req.body.body;
 
@@ -67,7 +58,7 @@ app.post('/createmsg', (req, res) => {
         Message.createMessage(message))
 })
 
-app.post('/registration', (req, res) => {
+routes.post('/registration', (req, res) => {
 
     let username = req.body.username;
     let password = req.body.password;
@@ -95,7 +86,7 @@ app.post('/registration', (req, res) => {
         User.createUser(user))
 });
 
-app.post('/login', (req, res) => {
+routes.post('/login', (req, res) => {
     db.collection('users')
         .findOne({ username: req.body.username },
             function(err, user) {
@@ -123,44 +114,6 @@ app.post('/login', (req, res) => {
 
             });
 })
-
-app.get('/read', (req, res) => {
-    db.collection('User')
-        .find().toArray(function(e, docs) {
-            res.render("user", {
-                user: docs
-            });
-        });
-});
-
-app.get('/readmsg', (req, res) => {
-    db.collection('messages')
-        .find().toArray(function(e, docs) {
-            res.render("message", {
-                message: docs
-            });
-        });
-});
-
-app.get('/update', (req, res) => {
-    res.send(
-        db
-        .collection('User')
-        .updateOne({ "id": "4" }, { $set: { "item": "newItem" } }, (err, user) => {
-            if (err) res.status(404).send(err)
-        })
-    )
-});
-
-app.get('/delete', (req, res) => {
-    res.send(
-        db
-        .collection('User')
-        .deleteMany({ "id": "5" }, (err, user) => {
-            if (err) res.status(404).send(err)
-        })
-    )
-});
 
 app.get('*', (req, res) => {
     res.end('404');
