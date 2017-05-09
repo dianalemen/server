@@ -41,14 +41,21 @@ app.use(expressValidator());
 app.get('/', (req, res) => {
     io.on('connection', function(socket) {
         console.log("connected");
-        socket.on('message', function(msg) {
-            console.log('message: ' + msg);
-        });
+        socket.on('message', createMsg);
     });
     res.render('home', {
         message: 'welcome to home page'
     });
 });
+
+function createMsg() {
+    let body = "test";
+
+    let message = new Message({
+        body: body
+    });
+    Message.createMessage(message);
+};
 
 routes.post('/createmsg', (req, res) => {
 
