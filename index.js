@@ -38,9 +38,12 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded())
 app.use(expressValidator());
 
-routes.get('/', (req, res) => {
+app.get('/', (req, res) => {
     io.on('connection', function(socket) {
         console.log("connected");
+        socket.on('message', function(msg) {
+            console.log('message: ' + msg);
+        });
     });
     res.render('home', {
         message: 'welcome to home page'
@@ -114,6 +117,32 @@ routes.post('/login', (req, res) => {
 
             });
 })
+
+routes.use(function(req, res, next) {
+
+    var token = req.body.token || req.param('token') || req.headers['x-access-token'];
+
+    if (token) {
+
+        jwt.verify(token, app.get('superSecret'), function(err, decoded) {
+            if (err) {
+                return res.json({ success: false, message: 'Failed to authenticate token.' });
+            } else {
+                req.decoded = decoded;
+                next();
+            }
+        });
+
+    } else {
+
+        return res.status(403).send({
+            success: false,
+            message: 'No token provided.'
+        });
+
+    }
+
+});
 
 app.get('*', (req, res) => {
     res.end('404');

@@ -1,9 +1,10 @@
 <script src="http://localhost:4200/socket.io/socket.io.js"></script>
 <script>
   var socket = io();
+  socket.emit("message", "vkjfkj");
 </script>
 <h1>{{message}}</h1>
 <form method="post" action="/home">
 <textarea name='body' ></textarea>
-		<button type="submit">Створити</button>
+		<button type="submit" onclick="click()">Створити</button>
 </form>
