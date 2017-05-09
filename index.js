@@ -13,9 +13,11 @@ const passport = require('passport');
 const expressValidator = require('express-validator');
 const jwt = require('jsonwebtoken');
 const config = require('./config.json');
+const http = require('http').Server(app);
+const io = require('socket.io').listen(http);
 
 mongoose.connect('mongodb://localhost/chatdb');
-var db = mongoose.connection;
+const db = mongoose.connection;
 
 const requestMiddleware = require('./request-middleware').requestMiddleware;
 
@@ -36,6 +38,9 @@ app.use(bodyParser.urlencoded())
 app.use(expressValidator());
 
 app.get('/', (req, res) => {
+    io.on('connection', function(socket) {
+        console.log("connected");
+    });
     res.render('home', {
         message: 'welcome to home page'
     });
@@ -161,6 +166,6 @@ app.get('*', (req, res) => {
     res.end('404');
 });
 
-app.listen(port, (err) => {
+http.listen(port, (err) => {
     console.log(`server is runnign at ${port}`);
 });
