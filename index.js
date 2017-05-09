@@ -76,11 +76,11 @@ app.post('/registration', (req, res) => {
 
     console.log(req.body);
 
-    req.checkBody('username', 'Name is required').notEmpty();
+    req.checkBody('username', 'username is required').notEmpty();
     req.checkBody('password', 'Password is required').notEmpty();
     req.checkBody('email', 'Email is required').notEmpty();
     req.checkBody('email', 'Email is is not valid').isEmail();
-    req.checkBody('username', 'Name is required').notEmpty();
+    req.checkBody('name', 'Name is required').notEmpty();
 
     let errors = req.validationErrors();
 

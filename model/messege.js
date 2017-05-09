@@ -8,6 +8,15 @@ const MessageSchema = mongoose.Schema({
     createAt: {
         type: Date,
         default: Date.now
+    },
+    user: {
+        username: {
+            type: String,
+            index: true
+        },
+        name: {
+            type: String
+        }
     }
 });
 
