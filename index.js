@@ -68,7 +68,7 @@ routes.post('/createmsg', (req, res) => {
         Message.createMessage(message))
 })
 
-routes.post('/registration', (req, res) => {
+app.post('/registration', (req, res) => {
 
     let username = req.body.username;
     let password = req.body.password;
@@ -96,7 +96,7 @@ routes.post('/registration', (req, res) => {
         User.createUser(user))
 });
 
-routes.post('/login', (req, res) => {
+app.post('/login', (req, res) => {
     db.collection('users')
         .findOne({ username: req.body.username },
             function(err, user) {
@@ -104,19 +104,18 @@ routes.post('/login', (req, res) => {
                 if (err) throw err;
 
                 if (!user) {
-                    res.json({ success: false, message: 'Authentication failed. User not found.' });
+                    res.send({ success: false, message: 'Authentication failed. User not found.' });
                 } else if (user) {
 
                     if (user.password != req.body.password) {
-                        res.json({ success: false, message: 'Authentication failed. Wrong password.' });
+                        res.send({ success: false, message: 'Authentication failed. Wrong password.' });
                     } else {
 
                         var token = jwt.sign(user, config.secret, { noTimestamp: true });
 
-                        res.json({
-                            success: true,
-                            message: 'Enjoy your token!',
-                            token: token
+                        res.send({
+                            token: token,
+                            user: req.body.username
                         });
                     }
 
@@ -131,7 +130,7 @@ routes.use(function(req, res, next) {
 
     if (token) {
 
-        jwt.verify(token, app.get('superSecret'), function(err, decoded) {
+        jwt.verify(token, app.get('secret'), function(err, decoded) {
             if (err) {
                 return res.json({ success: false, message: 'Failed to authenticate token.' });
             } else {
