@@ -104,11 +104,13 @@ app.post('/login', (req, res) => {
                 if (err) throw err;
 
                 if (!user) {
-                    res.send({ success: false, message: 'Authentication failed. User not found.' });
+                    console.log('Authentication failed. User not found.');
+                    res.send(404);
                 } else if (user) {
 
                     if (user.password != req.body.password) {
-                        res.send({ success: false, message: 'Authentication failed. Wrong password.' });
+                        console.log('Authentication failed. Wrong password.');
+                        res.send(404);
                     } else {
 
                         var token = jwt.sign(user, config.secret, { noTimestamp: true });
@@ -118,9 +120,7 @@ app.post('/login', (req, res) => {
                             user: req.body.username
                         });
                     }
-
                 }
-
             });
 })
 
