@@ -10,7 +10,6 @@ const mongoose = require('mongoose');
 const Message = require('./model/messege');
 const User = require('./model/user');
 const passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
 const expressValidator = require('express-validator');
 const jwt = require('jsonwebtoken');
 const config = require('./config.json');
@@ -147,6 +146,13 @@ routes.use(function(req, res, next) {
 
     }
 
+});
+app.get('/readmsg', (req, res) => {
+    db.collection('messages')
+        .find().toArray(function(err, docs) {
+            if (err) throw err;
+            res.json(docs);
+        });
 });
 
 app.get('*', (req, res) => {
