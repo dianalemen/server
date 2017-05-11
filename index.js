@@ -10,6 +10,7 @@ const mongoose = require('mongoose');
 const Message = require('./model/messege');
 const User = require('./model/user');
 const passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 const expressValidator = require('express-validator');
 const jwt = require('jsonwebtoken');
 const config = require('./config.json');
@@ -96,12 +97,6 @@ app.post('/registration', (req, res) => {
 
 app.post('/login', (req, res) => {
 
-    bcrypt.genSalt(10, function(err, salt) {
-        bcrypt.hash(req.body.password, salt, function(err, hash) {
-            console.log(req.body.password = hash)
-        });
-    });
-
     db.collection('users')
         .findOne({ username: req.body.username },
             function(err, user) {
@@ -113,17 +108,16 @@ app.post('/login', (req, res) => {
                     res.send(404);
                 } else if (user) {
 
-                    if (user.password != req.body.password) {
-                        console.log('Authentication failed. Wrong password.', req.body.password);
-                        res.send(404);
-                    } else {
-
+                    if (bcrypt.compareSync(req.body.password, user.password)) {
                         var token = jwt.sign(user, config.secret, { noTimestamp: true });
 
                         res.send({
                             token: token,
                             user: req.body.username
                         });
+                    } else {
+                        console.log('Authentication failed. Wrong password.');
+                        res.send(404);
                     }
                 }
             });
