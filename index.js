@@ -16,6 +16,7 @@ const config = require('./config.json');
 const http = require('http').Server(app);
 const io = require('socket.io').listen(http);
 const routes = express.Router();
+const bcrypt = require('bcryptjs');
 
 mongoose.connect('mongodb://localhost/chatdb');
 const db = mongoose.connection;
@@ -75,8 +76,6 @@ app.post('/registration', (req, res) => {
     let email = req.body.email;
     let name = req.body.name;
 
-    console.log(req.body);
-
     req.checkBody('username', 'username is required').notEmpty();
     req.checkBody('password', 'Password is required').notEmpty();
     req.checkBody('email', 'Email is required').notEmpty();
@@ -85,18 +84,24 @@ app.post('/registration', (req, res) => {
 
     let errors = req.validationErrors();
 
-    var user = new User({
+    let user = new User({
         username: username,
         password: password,
         email: email,
         name: name
     });
-    console.log(user);
     res.send(
         User.createUser(user))
 });
 
 app.post('/login', (req, res) => {
+
+    bcrypt.genSalt(10, function(err, salt) {
+        bcrypt.hash(req.body.password, salt, function(err, hash) {
+            console.log(req.body.password = hash)
+        });
+    });
+
     db.collection('users')
         .findOne({ username: req.body.username },
             function(err, user) {
@@ -109,7 +114,7 @@ app.post('/login', (req, res) => {
                 } else if (user) {
 
                     if (user.password != req.body.password) {
-                        console.log('Authentication failed. Wrong password.');
+                        console.log('Authentication failed. Wrong password.', req.body.password);
                         res.send(404);
                     } else {
 
