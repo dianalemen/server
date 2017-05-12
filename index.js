@@ -12,7 +12,9 @@ const User = require('./model/user');
 const passport = require('passport');
 const expressValidator = require('express-validator');
 const jwt = require('jsonwebtoken');
+const socketioJwt = require('socketio-jwt')
 const config = require('./config.json');
+const cors = require('cors');
 const http = require('http').Server(app);
 const io = require('socket.io').listen(http);
 const routes = express.Router();
@@ -38,19 +40,24 @@ app.use(requestMiddleware);
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded())
 app.use(expressValidator());
+app.use(cors());
 
-app.get('/', (req, res) => {
-    io.on('connection', function(socket) {
-        console.log("connected");
-        socket.on('message', createMsg);
-    });
-    res.render('home', {
-        message: 'welcome to home page'
-    });
-});
+
+io.sockets
+    .on('connection', socketioJwt.authorize({
+        secret: config.secret,
+        callback: false
+    }))
+    .on('authenticated', socket => {
+        io.emit('join', {
+            user: socket.decoded_token,
+            time: Date.now()
+        }), socket.on("message", createMsg)
+    })
+
 
 function createMsg() {
-    let body = "test";
+    let body = "testtest";
 
     let message = new Message({
         body: body
@@ -122,31 +129,7 @@ app.post('/login', (req, res) => {
             });
 })
 
-routes.use(function(req, res, next) {
 
-    var token = req.body.token || req.param('token') || req.headers['x-access-token'];
-
-    if (token) {
-
-        jwt.verify(token, app.get('secret'), function(err, decoded) {
-            if (err) {
-                return res.json({ success: false, message: 'Failed to authenticate token.' });
-            } else {
-                req.decoded = decoded;
-                next();
-            }
-        });
-
-    } else {
-
-        return res.status(403).send({
-            success: false,
-            message: 'No token provided.'
-        });
-
-    }
-
-});
 app.get('/readmsg', (req, res) => {
     db.collection('messages')
         .find().toArray(function(err, docs) {
