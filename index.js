@@ -50,10 +50,11 @@ io.sockets
     }))
     .on('authenticated', socket => {
         io.emit('join', {
-                user: socket.decoded_token,
+                user: socket.decoded_token.name,
                 time: Date.now()
             }),
             socket.on("message", createMsg)
+            .on('disconnect', disconnect)
 
         function createMsg(msg) {
             let message = new Message({
@@ -61,12 +62,19 @@ io.sockets
                 user: socket.decoded_token.name
             });
             io.emit('message', message);
-            Message.createMessage(message);
 
+            Message.createMessage(message);
         };
 
-
+        function disconnect() {
+            io.emit('leave', {
+                user: socket.decoded_token.name,
+                time: Date.now()
+            })
+        }
     })
+
+
 
 app.post('/registration', (req, res) => {
 
