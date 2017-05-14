@@ -10,13 +10,7 @@ const MessageSchema = mongoose.Schema({
         default: Date.now
     },
     user: {
-        username: {
-            type: String,
-            index: true
-        },
-        name: {
-            type: String
-        }
+        type: String
     }
 });
 

@@ -50,31 +50,23 @@ io.sockets
     }))
     .on('authenticated', socket => {
         io.emit('join', {
-            user: socket.decoded_token,
-            time: Date.now()
-        }), socket.on("message", createMsg)
+                user: socket.decoded_token,
+                time: Date.now()
+            }),
+            socket.on("message", createMsg)
+
+        function createMsg(msg) {
+            let message = new Message({
+                body: msg,
+                user: socket.decoded_token.name
+            });
+            io.emit('message', message);
+            Message.createMessage(message);
+
+        };
+
+
     })
-
-
-function createMsg() {
-    let body = "testtest";
-
-    let message = new Message({
-        body: body
-    });
-    Message.createMessage(message);
-};
-
-routes.post('/createmsg', (req, res) => {
-
-    let body = req.body.body;
-
-    let message = new Message({
-        body: body
-    });
-    res.send(
-        Message.createMessage(message))
-})
 
 app.post('/registration', (req, res) => {
 
@@ -115,6 +107,7 @@ app.post('/login', (req, res) => {
                 } else if (user) {
 
                     if (bcrypt.compareSync(req.body.password, user.password)) {
+
                         var token = jwt.sign(user, config.secret, { noTimestamp: true });
 
                         res.send({
