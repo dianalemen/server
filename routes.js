@@ -80,4 +80,12 @@ router.get('/readmsg', (req, res) => {
         });
 });
 
+router.get('/users', (req, res) => {
+    db.collection('users')
+        .find().toArray(function(err, users) {
+            if (err) throw err;
+            res.json(users);
+        });
+});
+
 module.exports = router;
