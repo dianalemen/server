@@ -82,10 +82,10 @@ router.get('/users', (req, res) => {
     db.collection('users')
         .find().toArray(function(err, users) {
             if (err) throw err;
-            newUsers = users.map(user => [{
-                username: user.username,
-                name: user.name
-            }])
+            newUsers = users.map(user => {
+                delete user.password;
+                return user;
+            })
             res.json(newUsers);
         });
 });
