@@ -35,7 +35,7 @@ io.sockets
     }))
     .on('authenticated', socket => {
         io.emit('join', {
-                user: socket.decoded_token.name,
+                user: socket.decoded_token.username,
                 time: Date.now()
             }),
             socket.on("message", createMsg)
@@ -44,7 +44,7 @@ io.sockets
         function createMsg(msg) {
             let message = new Message({
                 body: msg,
-                user: socket.decoded_token.name
+                user: socket.decoded_token.username
             });
             io.emit('message', message);
 
