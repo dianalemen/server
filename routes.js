@@ -10,7 +10,7 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs');
 
 
-mongoose.connect('mongodb://diana:opklnm@ds143221.mlab.com:43221/newchatdb');
+mongoose.connect('mongodb://localhost/chatdb');
 const db = mongoose.connection;
 
 
