@@ -37,9 +37,17 @@ io.sockets
         io.emit('join', {
                 user: socket.decoded_token.username,
                 time: Date.now()
-            }),
+            }, join),
             socket.on("message", createMsg)
             .on('disconnect', disconnect)
+
+        function join() {
+            db
+                .collection('users')
+                .updateOne({ "username": socket.decoded_token.username }, { $set: { "status": "online" } }, (err, user) => {
+                    if (err) res.status(404).send(err)
+                })
+        }
 
         function createMsg(msg) {
             let message = new Message({
