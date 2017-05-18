@@ -102,12 +102,12 @@ router.get('/users', (req, res) => {
         });
 });
 
-function leave() {
+router.post('/leave', (req, res) => {
     db
         .collection('users')
         .updateOne({ "username": req.body.username }, { $set: { "status": "offline" } }, (err, user) => {
             if (err) res.status(404).send(err)
         })
-};
+});
 
 module.exports = router;
