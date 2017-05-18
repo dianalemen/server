@@ -35,15 +35,9 @@ io.sockets
     }))
     .on('authenticated', socket => {
         io.emit('join', {
-                    user: socket.decoded_token.username,
-                    time: Date.now()
-                },
-                db
-                .collection('users')
-                .updateOne({ "username": socket.decoded_token.username }, { $set: { "status": "online" } }, (err, user) => {
-                    if (err) res.status(404).send(err)
-                })
-            ),
+                user: socket.decoded_token.username,
+                time: Date.now()
+            }),
             socket.on("message", createMsg)
             .on('disconnect', disconnect)
 
