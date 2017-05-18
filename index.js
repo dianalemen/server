@@ -34,11 +34,8 @@ io.sockets
         callback: false
     }))
     .on('authenticated', socket => {
-        io.emit('join', {
-                user: socket.decoded_token.username,
-                time: Date.now()
-            }),
-            socket.on("message", createMsg)
+        io.emit('join', join)
+        socket.on("message", createMsg)
             .on('disconnect', disconnect)
 
         function join() {
