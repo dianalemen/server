@@ -13,6 +13,7 @@ const cors = require('cors');
 const http = require('http').Server(app);
 const io = require('socket.io').listen(http);
 const router = require('./routes');
+const leave = require('./routes').leave;
 
 const requestMiddleware = require('./request-middleware').requestMiddleware;
 
@@ -26,6 +27,7 @@ app.use(bodyParser.urlencoded())
 app.use(expressValidator());
 app.use(cors());
 app.use(router);
+app.use(leave);
 
 
 io.sockets
@@ -52,6 +54,7 @@ io.sockets
         };
 
         function disconnect() {
+            leave;
             io.emit('leave', {
                 user: socket.decoded_token.username,
                 time: Date.now()
