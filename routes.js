@@ -55,7 +55,13 @@ router.post('/login', (req, res) => {
 
                     if (bcrypt.compareSync(req.body.password, user.password)) {
 
-                        var token = jwt.sign(user, config.secret, { noTimestamp: true });
+                        db
+                            .collection('users')
+                            .updateOne({ "username": socket.decoded_token.username }, { $set: { "status": "online" } }, (err, user) => {
+                                if (err) res.status(404).send(err)
+                            })
+
+                        let token = jwt.sign(user, config.secret, { noTimestamp: true });
 
                         res.send({
                             token: token,
