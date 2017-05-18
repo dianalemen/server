@@ -53,7 +53,7 @@ io.sockets
 
         function disconnect() {
             io.emit('leave', {
-                user: socket.decoded_token.name,
+                user: socket.decoded_token.username,
                 time: Date.now()
             })
         }
