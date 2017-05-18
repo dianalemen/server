@@ -57,7 +57,7 @@ router.post('/login', (req, res) => {
 
                         db
                             .collection('users')
-                            .updateOne({ "usernamw": req.body.username }, { $set: { "status": "online" } }, (err, user) => {
+                            .updateOne({ "username": req.body.username }, { $set: { "status": "online" } }, (err, user) => {
                                 if (err) res.status(404).send(err)
                             })
 
