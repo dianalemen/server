@@ -37,7 +37,7 @@ io.sockets
         io.emit('join', {
                 user: socket.decoded_token.username,
                 time: Date.now()
-            }, join),
+            }),
             socket.on("message", createMsg)
             .on('disconnect', disconnect)
 
