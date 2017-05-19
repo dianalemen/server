@@ -59,14 +59,6 @@ io.sockets
                 time: Date.now()
             })
         }
-
-        function connect() {
-            router.join(socket.decoded_token.username);
-            io.emit('join', {
-                user: socket.decoded_token.username,
-                time: Date.now()
-            })
-        }
     })
 
 
