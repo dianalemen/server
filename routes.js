@@ -52,13 +52,6 @@ router.post('/login', (req, res) => {
                 } else if (user) {
 
                     if (bcrypt.compareSync(req.body.password, user.password)) {
-
-                        db
-                            .collection('users')
-                            .updateOne({ "username": req.body.username }, { $set: { "status": "online" } }, (err, user) => {
-                                if (err) res.status(404).send(err)
-                            })
-
                         let token = jwt.sign(user, config.secret, { noTimestamp: true });
 
                         res.send({
