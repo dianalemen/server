@@ -32,6 +32,3 @@ module.exports.createUser = function(newUser, callback) {
         });
     });
 };
-module.exports.updateUser = function(updateUser) {
-    updateUser.save();
-};

@@ -13,14 +13,6 @@ const fs = require('fs');
 mongoose.connect('mongodb://diana:opklnm@ds143221.mlab.com:43221/newchatdb');
 const db = mongoose.connection;
 
-function leave() {
-    db
-        .collection('users')
-        .updateOne({ "username": req.body.username }, { $set: { "status": "offline" } }, (err, user) => {
-            if (err) res.status(404).send(err)
-        })
-}
-
 router.post('/registration', (req, res) => {
 
     let username = req.body.username;
@@ -102,12 +94,22 @@ router.get('/users', (req, res) => {
         });
 });
 
-router.post('/leave', (req, res) => {
-    db
-        .collection('users')
-        .updateOne({ "username": req.body.username }, { $set: { "status": "offline" } }, (err, user) => {
-            if (err) res.status(404).send(err)
-        })
-});
 
 module.exports = router;
+
+module.exports.leave = function(socket) {
+    console.log(socket)
+    db
+        .collection('users')
+        .updateOne({ "username": socket }, { $set: { "status": "offline" } }, (err, user) => {
+            if (err) res.status(404).send(err)
+        })
+}
+module.exports.join = function(socket) {
+    console.log(socket)
+    db
+        .collection('users')
+        .updateOne({ "username": socket }, { $set: { "status": "online" } }, (err, user) => {
+            if (err) res.status(404).send(err)
+        })
+}

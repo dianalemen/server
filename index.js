@@ -34,6 +34,7 @@ io.sockets
         callback: false
     }))
     .on('authenticated', socket => {
+        router.join(socket.decoded_token.username);
         io.emit('join', {
                 user: socket.decoded_token.username,
                 time: Date.now()
@@ -52,7 +53,16 @@ io.sockets
         };
 
         function disconnect() {
+            router.leave(socket.decoded_token.username);
             io.emit('leave', {
+                user: socket.decoded_token.username,
+                time: Date.now()
+            })
+        }
+
+        function connect() {
+            router.join(socket.decoded_token.username);
+            io.emit('join', {
                 user: socket.decoded_token.username,
                 time: Date.now()
             })
