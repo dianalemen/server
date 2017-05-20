@@ -19,6 +19,10 @@ const UserSchema = mongoose.Schema({
     status: {
         type: String,
         default: "offline"
+    },
+    addr: {
+        type: String,
+        default: " "
     }
 });
 

@@ -39,8 +39,13 @@ io.sockets
                 user: socket.decoded_token.username,
                 time: Date.now()
             }),
-            socket.on("message", createMsg)
+            socket.on("join", updateLoc)
+        socket.on("message", createMsg)
             .on('disconnect', disconnect)
+
+        function updateLoc(loc) {
+            router.update(loc, socket.decoded_token.username)
+        };
 
         function createMsg(msg) {
             let message = new Message({

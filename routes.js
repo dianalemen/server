@@ -106,3 +106,11 @@ module.exports.join = function(socket) {
             if (err) res.status(404).send(err)
         })
 }
+module.exports.update = function(loc, socket) {
+    console.log(socket)
+    db
+        .collection('users')
+        .updateOne({ "username": socket }, { $set: { "addr": loc } }, (err, user) => {
+            if (err) res.status(404).send(err)
+        })
+}
