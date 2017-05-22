@@ -40,12 +40,22 @@ io.sockets
                 time: Date.now()
             }),
             socket.on("join", updateLoc)
-        socket.on("message", createMsg)
+            .on("message", createMsg)
             .on('disconnect', disconnect)
+            .on('is typing', typingHandler)
+            .on('stop typing', stopTypingHandler)
 
         function updateLoc(loc) {
             router.update(loc, socket.decoded_token.username)
         };
+
+        function typingHandler() {
+            socket.broadcast.emit('typing', socket.decoded_token)
+        };
+
+        function stopTypingHandler() {
+            socket.broadcast.emit('stop typing', socket.decoded_token)
+        }
 
         function createMsg(msg) {
             let message = new Message({
